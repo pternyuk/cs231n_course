@@ -145,7 +145,7 @@ class TwoLayerNet(object):
   def train(self, X, y, X_val, y_val,
             learning_rate=1e-3, learning_rate_decay=0.95,
             reg=5e-6, num_iters=100,
-            batch_size=200, verbose=False):
+            batch_size=200, verbose=False, hint=False):
     """
     Train this neural network using stochastic gradient descent.
 
@@ -164,7 +164,7 @@ class TwoLayerNet(object):
     - verbose: boolean; if true print progress during optimization.
     """
     num_train = X.shape[0]
-    iterations_per_epoch = max(num_train / batch_size, 1)
+    iterations_per_epoch = max(num_train // batch_size, 1)
 
     # Use SGD to optimize the parameters in self.model
     loss_history = []
@@ -224,7 +224,7 @@ class TwoLayerNet(object):
       'val_acc_history': val_acc_history,
     }
 
-  def predict(self, X):
+  def predict(self, X, hint=False):
     """
     Use the trained weights of this two-layer network to predict labels for
     data points. For each data point we predict scores for each of the C
@@ -245,7 +245,10 @@ class TwoLayerNet(object):
     # TODO: Implement this function; it should be VERY simple!                #
     ###########################################################################
     y_pred = np.zeros(X.shape[0])
-    y_pred = np.argmax((X.dot(self.params['W1']) + self.params['b1']).dot(self.params['W2'])  + self.params['b2'], axis=1)
+    if hint:
+        y_pred = np.argmax(np.maximum(0,(X.dot(self.params['W1']) + self.params['b1'])).dot(self.params['W2'])  + self.params['b2'], axis=1)	
+    else:
+        y_pred = np.argmax((X.dot(self.params['W1']) + self.params['b1']).dot(self.params['W2'])  + self.params['b2'], axis=1)
     ###########################################################################
     #                              END OF YOUR CODE                           #
     ###########################################################################
